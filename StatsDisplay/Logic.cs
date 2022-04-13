@@ -14,19 +14,25 @@ namespace StatsDisplay
 		{
 			switch (role)
 			{
-				case RoleType.ChaosInsurgency:
-					return "008f1c";
+				case RoleType.ChaosConscript:
+					return "03811a";
+				case RoleType.ChaosMarauder:
+					return "045d22";
+				case RoleType.ChaosRepressor:
+					return "0c7732";
+				case RoleType.ChaosRifleman:
+					return "07771a";
 				case RoleType.ClassD:
 					return "ffae00";
 				case RoleType.FacilityGuard:
 					return "bfbfbf";
-				case RoleType.NtfCadet:
+				case RoleType.NtfPrivate:
 					return "6ab9f1";
-				case RoleType.NtfCommander:
+				case RoleType.NtfCaptain:
 					return "003dcb";
-				case RoleType.NtfLieutenant:
+				case RoleType.NtfSergeant:
 					return "058df1";
-				case RoleType.NtfScientist:
+				case RoleType.NtfSpecialist:
 					return "0390f5";
 				case RoleType.Scientist:
 					return "ffff7c";

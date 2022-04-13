@@ -1,11 +1,11 @@
 ﻿using Exiled.API.Features;
 using Exiled.Events.EventArgs;
+using Exiled.Loader;
 using scp035.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 
 namespace StatsDisplay
 {
@@ -40,14 +40,31 @@ namespace StatsDisplay
 			}
 		}
 
-		private Player TryGet035()
+		private List<Player> TryGet035()
 		{
-			return Scp035Data.GetScp035();
+			List<Player> scp035 = null;
+			if (StatsDisplay.isScp035)
+			{
+				try
+				{
+					scp035 = (List<Player>)Loader.Plugins.First(pl => pl.Name == "scp035").Assembly.GetType("scp035.API.Scp035Data").GetMethod("GetScp035s", BindingFlags.Public | BindingFlags.Static).Invoke(null, null);
+				}
+				catch (Exception e)
+				{
+					Log.Debug("Failed getting 035s: " + e);
+					scp035 = new List<Player>();
+				}
+			}
+			else
+			{
+				scp035 = new List<Player>();
+			}
+			return scp035;
 		}
 
 		internal void OnPlayerDeath(DiedEventArgs ev)
 		{
-			if (DamageTypes.FromIndex(ev.HitInformations.Tool).name == "POCKET")
+			if (ev.Handler.Type == Exiled.API.Enums.DamageType.PocketDimension)
 			{
 				Player scp106 = Player.List.FirstOrDefault(x => x.Role == RoleType.Scp106);
 				if (scp106 != null)
@@ -61,14 +78,14 @@ namespace StatsDisplay
 			Player scp035 = null;
 			if (StatsDisplay.isScp035)
 			{
-				scp035 = TryGet035();
+				scp035 = TryGet035().FirstOrDefault();
 			}
 
-			if (ev.Killer.Team == Team.SCP || ev.Killer.Id == scp035?.Id)
+			if (ev.Killer.Role.Team == Team.SCP || ev.Killer.Id == scp035?.Id)
 			{
 				IncrementScpKill(ev.Killer);
 			}
-			else if (ev.Target.Team == Team.SCP || ev.Target.Id == scp035?.Id)
+			else if (ev.Target.Role.Team == Team.SCP || ev.Target.Id == scp035?.Id)
 			{
 				if (!humanKills.ContainsKey(ev.Killer)) humanKills.Add(ev.Killer, new KillData()
 				{
